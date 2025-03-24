@@ -1,2 +1,7 @@
 streamlit
-openai
+pandas
+folium
+from streamlit_folium import st_folium
+os
+requests
+from PIL import Image
