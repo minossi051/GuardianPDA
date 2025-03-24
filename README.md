@@ -1,18 +1,18 @@
 # 💬 Chatbot template
 
-A simple Streamlit app that shows how to build a chatbot using OpenAI's GPT-3.5.
+Um simples consultor de dados, utilizando o modelo DeepSeek R1
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://chatbot-template.streamlit.app/)
 
-### How to run it on your own machine
+### Como importar o modelo para uso local
 
-1. Install the requirements
+1. 
 
    ```
    $ pip install -r requirements.txt
    ```
 
-2. Run the app
+2. 
 
    ```
    $ streamlit run streamlit_app.py
