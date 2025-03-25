@@ -14,7 +14,6 @@ import os
 # o gateway procergs não processa a solicita~]ao do client para o uso da api deep seek
 # tentei com o certificado exportado .pem e não adiantou
 # desativei a verificação SSL para testes de desenvolvimento; é necessário a solução deste problema para o deploy em produção
-#os créditos da chave api se esgotaram
 
 #métodos para a solução da verificação  SSL
 #Usar Certificado Corporativo Global (Solução Permanente)
