@@ -8,6 +8,38 @@ from PIL import Image
 import fitz
 import docx
 import json
+import os
+
+#issues on 25/03/2025
+# o gateway procergs não processa a solicita~]ao do client para o uso da api deep seek
+# tentei com o certificado exportado .pem e não adiantou
+# desativei a verificação SSL para testes de desenvolvimento; é necessário a solução deste problema para o deploy em produção
+#os créditos da chave api se esgotaram
+
+#métodos para a solução da verificação  SSL
+#Usar Certificado Corporativo Global (Solução Permanente)
+import certifi
+print(certifi.where())
+from requests.adapters import HTTPAdapter
+from urllib3.poolmanager import
+import ssl
+class CustomHttpAdapter(HTTPAdapter):
+    def init_poolmanager(self, connections, maxsize, block=False):
+        self.poolmanager = PoolManager(
+            num_pools=connections,
+            maxsize=maxsize,
+            block=block,
+            ssl_version=ssl.PROTOCOL_TLS_CLIENT,
+            ca_certs='C:\\Users\\vicenzo-minossi\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\certifi\\cacert.pem'
+        )
+DEEPSEEK_API_URL = "https://api.deepseek.com"
+DEEPSEEK_API_KEY = "sk-14c8c4567b594bb78565d7892be5426a"
+PROXY_URL_AUTENTICADED = 'http://vicenzo-minossi:Copodecoca2005!@proxy.procergs.reders'
+
+sessao = requests.Session()
+sessao.mount('https://', CustomHttpAdapter())
+
+
 
 st.title('Painel interativo - PoPs RS📊')
 
@@ -115,17 +147,22 @@ def carregar_arquivos():
                 arquivos_extraidos[arquivo] = f"Erro ao carregar planilha: {e}"
     
     return arquivos_extraidos
-# carregar os arquivos de treinamento
+
 
 
 bot_icon = "C:\\Users\\vicenzo-minossi\\Desktop\\Guardian\\guardian.png" 
 st.image(Image.open(bot_icon), width=100) 
 st.title("💬 Eagle, assistente DIF-PIR-PoPs")
 #deepseek
-DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
-DEEPSEEK_API_KEY = "sk-09a644fe699f439cb16ab3e4ed751887"  # Substituir pela sua chave
 
-nome_usuario = os.getlogin()
+
+raw_user = os.getlogin()
+raw_user = str(raw_user)
+
+parters = raw_user.split('-')
+nome = parters[0].capitalize() if len(parters) > 0 else ''
+sobrenome = parters[1].capitalize() if len(parters) > 1 else ''
+
 
 # Chamada da função e verificação
 arquivos_extraidos = carregar_arquivos()
@@ -134,7 +171,7 @@ if arquivos_extraidos is None:
     
 #concatenar dados para agregar ao contexto
 # Criar o contexto do chatbot (sem duplicidade)
-contexto_completo = f'Usuário: {nome_usuario}\n\n'
+contexto_completo = f'Usuário: {nome} {sobrenome}\n\n'
 if abas:
     for nome_aba, df in abas.items():
         contexto_completo += f"\n\n### Dados da aba: {nome_aba}\n"
@@ -166,14 +203,20 @@ def processar_pergunta_com_deepseek(pergunta, contexto):
             "como os splits e os nobreaks, por exemplo. Há também as abas que representam um mapeamento dos racks nos PoPs, com cada equipamento sinalizado. Adicionei ao seu contexo o nome do usuário do Windows"
             "ao qual você está falando no momento, então saberás se sou eu, Carlos, ou outro colega do setor. Dê sempre respostas claras e objetivas, com uma entonação um pouco mais despojada"
             ", descontraída, mas sem fugir muito do profissionalismo. Em caso de informações faltando ou caso não chegue a uma conclusão sobre algo, por favor informe a nós! Suas respostas, se convirem à, podem incluir"
-            "interfaces gráficas em Python (pergunte ao usuário sempre) e análise de dados mais aprofundada. Estarei disponibilizando algumas instruções operacionais nas abas que contém 'Treinamento Chatbot', que contém"
-            "informações sobre a política e postura adota diante de incidentes registrados. "},
+            "interfaces gráficas em Python (pergunte ao usuário sempre) e análise de dados mais aprofundada. Estarei disponibilizando algumas instruções operacionais nos seus arquivos de treinamento, que contém"
+            "informações sobre a política e postura que a comapnhia adota diante de incidentes registrados. "},
             {"role": "user", "content": f"{contexto}\n\nPergunta: {pergunta}"}
         ],
         "max_tokens": 300
     }
-    response = requests.post(DEEPSEEK_API_URL, headers=headers, json=payload)
-    return response.json().get("choices", [{}])[0].get("message", {}).get("content", "Erro na resposta")
+
+    #response = requests.post(DEEPSEEK_API_URL, headers=headers, json=payload, verify=True)  ##################################### Ativar verificação SSl para ambiente de produção
+    #return response.json().get("choices", [{}])[0].get("message", {}).get("content", "Erro na resposta")
+
+    response = sessao.get(
+        DEEPSEEK_API_URL, proxies={'http': PROXY_URL_AUTENTICADED, 'https': PROXY_URL_AUTENTICADED},
+        verify=True
+    )
 
 # Controle de histórico de conversas
 if "conversas" not in st.session_state:
