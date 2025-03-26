@@ -32,7 +32,7 @@ class CustomHttpAdapter(HTTPAdapter):
             ca_certs='C:\\Users\\vicenzo-minossi\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\certifi\\cacert.pem'
         )
 DEEPSEEK_API_URL = "https://api.deepseek.com"
-DEEPSEEK_API_KEY = "sk-14c8c4567b594bb78565d7892be5426a"
+DEEPSEEK_API_KEY = "key"
 PROXY_URL_AUTENTICADED = 'http://vicenzo-minossi:Copodecoca2005!@proxy.procergs.reders'
 
 sessao = requests.Session()
