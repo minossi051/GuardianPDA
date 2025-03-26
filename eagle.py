@@ -33,7 +33,6 @@ class CustomHttpAdapter(HTTPAdapter):
         )
 DEEPSEEK_API_URL = "https://api.deepseek.com"
 DEEPSEEK_API_KEY = "key"
-PROXY_URL_AUTENTICADED = 'http://vicenzo-minossi:Copodecoca2005!@proxy.procergs.reders'
 
 sessao = requests.Session()
 sessao.mount('https://', CustomHttpAdapter())
